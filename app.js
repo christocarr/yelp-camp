@@ -49,7 +49,8 @@ app.post('/campgrounds', (req, res) => {
   //get data from form
   let name = req.body.name;
   let img = req.body.image;
-  let newCampground = {name: name, img: img};
+  let desc = req.body.description;
+  let newCampground = {name: name, img: img, description: desc};
   //create a new camp site and save to db
   CampSite.create(newCampground, (err, newlyCreated) => {
     if(err) {
@@ -67,7 +68,15 @@ app.get('/campgrounds/new', (req, res) => {
 })
 
 app.get('/campgrounds/:id', (req, res) => {
- res.render('show');
+  CampSite.findById(req.params.id, (err, foundCampsite) => {
+    if(err) {
+      console.log(err)
+    } else {
+      res.render('show', {campground: foundCampsite});
+    }
+  });
+  
+ 
 });
 
 app.listen(3000, () => {

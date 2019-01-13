@@ -12,14 +12,17 @@ app.set('view engine', 'ejs');
 //schema setup
 let campSiteShema = new mongoose.Schema({
   name: String,
-  img: String
+  img: String,
+  description: String
 });
 
 let CampSite = mongoose.model("Campsite", campSiteShema);
 
 // CampSite.create(
 //   {
-//     name: "Silver Creek", img: "https://farm8.staticflickr.com/7205/7121863467_eb0aa64193.jpg"
+//     name: "Silver Creek", 
+//     img: "https://farm8.staticflickr.com/7205/7121863467_eb0aa64193.jpg",
+//     description: "Wonderful site in open fields."
 //   }, function(err, campsite) {
 //     if(err) {
 //       console.log(err);
@@ -37,8 +40,7 @@ app.get('/campgrounds', (req, res) => {
     if(err) {
       console.log(err);
     } else {
-      res.render('campgrounds', {campgrounds: allCampsites});
-      console.log(allCampsites)
+      res.render('index', {campgrounds: allCampsites});
     }
   });
 });
@@ -63,6 +65,10 @@ app.post('/campgrounds', (req, res) => {
 app.get('/campgrounds/new', (req, res) => {
   res.render('new');
 })
+
+app.get('/campgrounds/:id', (req, res) => {
+ res.render('show');
+});
 
 app.listen(3000, () => {
   console.log('Open browser on port 3000');

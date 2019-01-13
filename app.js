@@ -2,33 +2,63 @@ let express = require('express');
 let app = express();
 let request = require('request');
 let bodyParser = require('body-parser');
+let mongoose = require('mongoose');
+
+mongoose.connect('mongodb://localhost:27017/camp_site', { useNewUrlParser: true });
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.set('view engine', 'ejs');
 
-let campgrounds = [
-  {name: "Silver Creek", img: "https://farm8.staticflickr.com/7205/7121863467_eb0aa64193.jpg"},
-  {name: "Pilgram's Rest", img: "https://farm2.staticflickr.com/1424/1430198323_c26451b047.jpg"},
-  {name: "Sunderland Pass", img: "https://farm3.staticflickr.com/2116/2164766085_0229ac3f08.jpg"}
-];
+//schema setup
+let campSiteShema = new mongoose.Schema({
+  name: String,
+  img: String
+});
+
+let CampSite = mongoose.model("Campsite", campSiteShema);
+
+// CampSite.create(
+//   {
+//     name: "Silver Creek", img: "https://farm8.staticflickr.com/7205/7121863467_eb0aa64193.jpg"
+//   }, function(err, campsite) {
+//     if(err) {
+//       console.log(err);
+//     } else {
+//       console.log("Newly created campsite", campsite);
+//     }
+//   });
 
 app.get('/', (req, res) => {
   res.render('landing');
 });
 
 app.get('/campgrounds', (req, res) => {
-  res.render('campgrounds', {campgrounds: campgrounds});
+  CampSite.find({}, (err, allCampsites) => {
+    if(err) {
+      console.log(err);
+    } else {
+      res.render('campgrounds', {campgrounds: allCampsites});
+      console.log(allCampsites)
+    }
+  });
 });
 
 app.post('/campgrounds', (req, res) => {
-  //get data from form and add to campgrounds array
+  //get data from form
   let name = req.body.name;
   let img = req.body.image;
   let newCampground = {name: name, img: img};
-  campgrounds.push(newCampground);
-  //redirect back to campgrounds page
-  res.redirect('/campgrounds');
-})
+  //create a new camp site and save to db
+  CampSite.create(newCampground, (err, newlyCreated) => {
+    if(err) {
+      console.log(err);
+    } else {
+      //redirect back to campgrounds page
+      res.redirect('/campgrounds');
+    }
+  });
+  
+});
 
 app.get('/campgrounds/new', (req, res) => {
   res.render('new');

@@ -4,6 +4,9 @@ let request = require('request');
 let bodyParser = require('body-parser');
 let mongoose = require('mongoose');
 let CampSite = require('./models/campground');
+let seedDB = require('./seeds');
+
+seedDB();
 
 mongoose.connect('mongodb://localhost:27017/camp_site', { useNewUrlParser: true });
 
